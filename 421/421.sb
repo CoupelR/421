@@ -1,0 +1,1613 @@
+jeudujoueur=1
+débutjeu=1
+nbjetonsJ1=0
+nbjetonsJ2=0
+lance=2
+Jsp = 0
+
+'------------------------------------------------------------------------------PROGRAMME PRINCIPAL ----------------------------------------------------------------
+
+Fenetre()                                                'Mise en place de la fenetre                '
+
+Boutons1()                                               'Tracé des boutons "Règle, contre IA, contre joueur"
+
+terrainjeu()                                             'Mise en place depart la zone des  jetons
+
+jetons()                                                 'Tracé des jetons
+
+tiredé()                                                 'Tirage des dés
+
+affichdé()                                               'Affichage des dés
+
+rotationdé()                                             'Rotation des dés
+
+Valeurs()                                                'Charge du tableau des scores  et classements des lancers
+
+
+Goto fin
+
+'-------------------------------------------------------------------------- TRACAGE DE LA FENETRE -------------------------------------------------------------------
+
+Sub Fenetre
+  
+  GraphicsWindow.TextInput = GestionClavier               'Activation souris et clavier
+  GraphicsWindow.MouseDown = OnMouseDown
+  GraphicsWindow.MouseUp = OnMouseUp
+  
+  GraphicsWindow.CanResize = "false"                       'Ouverture de la fenêtre de jeu
+  GraphicsWindow.BackgroundColor = "Green"
+  GraphicsWindow.Title = "421"
+  GraphicsWindow.Width = 1080
+  GraphicsWindow.Height = 600
+  GraphicsWindow.Show()
+  
+  depart = 1
+  
+EndSub  
+
+' ------------------------------------------------------------------------- TRACAGE DES BOUTONS - REGLE-JOUEUR-2JOUEURS ----------------------------------------------------
+
+Sub Boutons1
+  
+  GraphicsWindow.BrushColor="yellow"                       'Tracé du fond des boutons
+  GraphicsWindow.FillRectangle(0,360,1080,60)
+  
+  GraphicsWindow.BrushColor="DarkSlateGray"                'Tracé du bouton "Règle"
+  GraphicsWindow.FillRectangle(5,365,350,50)
+  GraphicsWindow.BrushColor="Black " 
+  GraphicsWindow.DrawRectangle(5,365,350,50)
+  GraphicsWindow.BrushColor="White " 
+  GraphicsWindow.FontSize = GraphicsWindow.FontSize + 28
+  GraphicsWindow.DrawText(40,365,"Règles du jeu")
+  
+  GraphicsWindow.BrushColor="DarkSlateGray"                 'Tracé du bouton "contre IA"
+  GraphicsWindow.FillRectangle(365,365,350,50)
+  GraphicsWindow.PenWidth=2
+  GraphicsWindow.PenColor="Black"
+  GraphicsWindow.DrawRectangle(365,365,350,50)
+  GraphicsWindow.BrushColor="White " 
+  GraphicsWindow.DrawText(425,365,"Jouer vs IA")
+  
+  GraphicsWindow.BrushColor="DarkSlateGray"                'Tracé du bouton "contre joueur"
+  GraphicsWindow.FillRectangle(725,365,350,50)
+  GraphicsWindow.BrushColor="Black " 
+  GraphicsWindow.DrawRectangle(725,365,350,50)
+  GraphicsWindow.BrushColor="White " 
+  GraphicsWindow.DrawText(745,365,"Jouer vs joueur")
+  
+EndSub  
+
+' ------------------------------------------------------------------------- TRACAGE DES BOUTONS - Lancer les dés---------------------------------------------------------------------
+
+Sub Boutons2
+  
+  If depart=0 then
+    GraphicsWindow.BrushColor="DarkSlateGray"
+    GraphicsWindow.FillRectangle(5,365,350,50)
+    GraphicsWindow.PenColor="Black"
+    GraphicsWindow.PenWidth=2
+    GraphicsWindow.DrawRectangle(5,365,350,50)
+    GraphicsWindow.BrushColor="White"
+    GraphicsWindow.DrawText(32,365,"Lancer les dés")
+    GraphicsWindow.BrushColor="yellow"
+    GraphicsWindow.DrawText(150,540,"A vous "+NomJ1)
+    nombrecoup=2
+  EndIf
+  
+EndSub
+
+'------------------------------------------------------------------------- TRACAGE DE LA ZONE DES JETONS ------------------------------------------------------------------------------------     
+
+Sub terrainjeu
+  
+  GraphicsWindow.BrushColor="Sienna" 
+  GraphicsWindow.FillRectangle(0,420,1080,120)
+  GraphicsWindow.pencolor="white"
+  GraphicsWindow.PenWidth=2
+  GraphicsWindow.DrawRectangle(0,420,360,120)
+  GraphicsWindow.DrawRectangle(360,420,360,120) 
+  GraphicsWindow.DrawRectangle(720,420,360,120)
+  GraphicsWindow.BrushColor="White"
+  GraphicsWindow.DrawText(5,415,"POT")
+  GraphicsWindow.DrawText(365,415,NomJ1)
+  GraphicsWindow.DrawText(725,415,NomJ2)
+  
+EndSub
+
+'------------------------------------------------------------------------- TRACAGE DES JETONS -----------------------------------------------------------------------------------     
+
+Sub jetons
+  
+  nbjetonspot=21-nbjetonsJ1-nbjetonsJ2
+  taillejetons=12
+  espace=4
+  
+  For case=0 to 2
+    lieu=360*case
+    If case=0 then                                   'Jetons du pot
+      For j = 0 to (nbjetonspot-1)
+        GraphicsWindow.BrushColor="black"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu ,460,12,70)
+        GraphicsWindow.BrushColor="white"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu + 2 ,462,10,70)
+      EndFor
+    Endif
+    
+    If case=1 then                                   'Jetons du joueur1
+      For j = 0 to (nbjetonsJ1-1)
+        GraphicsWindow.BrushColor="black"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu ,460,12,70)
+        GraphicsWindow.BrushColor="white"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu +2 ,462,10,70)
+      EndFor
+    EndIf
+    
+    If case=2 then                                   'Jetons du joueur2
+      For j = 0 to (nbjetonsJ2-1)
+        GraphicsWindow.BrushColor="black"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu ,460,12,70)
+        GraphicsWindow.BrushColor="white"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu + 2 ,462,10,70)
+      EndFor
+    Endif
+  Endfor
+  
+EndSub
+
+'------------------------------------------------------------------------- EFFACEMENT DES JETONS -----------------------------------------------------------------------------------     
+
+Sub effacejetons
+  
+  For case=0 to 2
+    lieu=360*case
+    If case=0 then                                   'Jetons du pot
+      For j = 0 to (nbjetonspot-1)
+        GraphicsWindow.BrushColor="Sienna"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu ,460,12,70)
+        GraphicsWindow.BrushColor="Sienna"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu + 2 ,462,10,70)
+      EndFor
+    Endif
+    
+    If case=1 then                                   'Jetons du joueur1
+      For j = 0 to (nbjetonsJ1-1)
+        GraphicsWindow.BrushColor="Sienna"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu ,460,12,70)
+        GraphicsWindow.BrushColor="Sienna"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu +2 ,462,10,70)
+      EndFor
+    EndIf
+    
+    If case=2 then                                   'Jetons du joueur2
+      For j = 0 to (nbjetonsJ2-1)
+        GraphicsWindow.BrushColor="Sienna"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu ,460,12,70)
+        GraphicsWindow.BrushColor="Sienna"
+        GraphicsWindow.FillRectangle(8+taillejetons*j + espace*j+lieu + 2 ,462,10,70)
+      EndFor
+    Endif
+  Endfor
+  
+EndSub
+
+'---------------------------------------------------------------------------- TIRAGE DES DES ------------------------------------------------------------------------------------   
+
+Sub tiredé
+  
+  dé1 =Math.GetRandomNumber(6)                       'Tirage aléatoire des 3 dés
+  dé2 =Math.GetRandomNumber(6)
+  dé3 =Math.GetRandomNumber(6)
+  
+  If depart=1 then                                   'Tirage forcé de 421
+    dé1=4
+    dé2=2
+    dé3=1
+  endif
+  
+  tridé()
+  
+EndSub
+
+'--------------------------------------------------------------------------------- TRI DECROISSANT DES DES ------------------------------------------------------------------------------------   
+
+sub tridé
+  
+  dé01=dé1                                           'Doublure pour tri des dés par ordre
+  dé02=dé2
+  dé03=dé3
+  
+  If dé02 > dé01 then                                'Tri des doublures par ordre décroissant
+    prov = dé01
+    dé01 = dé02
+    dé02 = prov
+  endif
+  
+  If dé03 > dé02 then
+    prov = dé02
+    dé02 = dé03
+    dé03 = prov
+  endif
+  
+  If dé02 > dé01 then   
+    prov = dé01
+    dé01 = dé02
+    dé02 = prov
+  endif
+  
+  jet = dé03 + dé02 * 10 + dé01 * 100                 'Constitution d'un jet
+  
+EndSub
+
+'---------------------------------------------------------------------------- AFFICHAGE DES DES VIDES ------------------------------------------------------------------------------------   
+
+Sub affichdé
+  
+  col = 0
+  For i = 1 to 3
+    GraphicsWindow.BrushColor = "White"
+    GraphicsWindow.FillEllipse(120+col,60,60,60)
+    GraphicsWindow.FillEllipse(120+col,240,60,60)
+    GraphicsWindow.FillEllipse(300+col,60,60,60)
+    GraphicsWindow.FillEllipse(300+col,240,60,60)
+    GraphicsWindow.FillRectangle(150+col,60,180,240)
+    GraphicsWindow.FillRectangle(120+col,90,240,180)
+    col = col + 300
+  Endfor
+  
+EndSub
+
+'---------------------------------------------------------------------------- AFFICHAGE ROTATION DES DES  ------------------------------------------------------------------------------------   
+
+Sub tourne
+  
+  GraphicsWindow.BrushColor = "White"
+  GraphicsWindow.FillEllipse(120+col,60,60,60)
+  GraphicsWindow.FillEllipse(120+col,240,60,60)
+  GraphicsWindow.FillEllipse(300+col,60,60,60)
+  GraphicsWindow.FillEllipse(300+col,240,60,60)
+  
+  For j = 1 to NbTours
+    
+    GraphicsWindow.BrushColor = "black"
+    GraphicsWindow.PenColor = "black"
+    GraphicsWindow.DrawLine(120+col,240,360+col,240)  'Trait bas
+    
+    GraphicsWindow.FillEllipse(col+210,120,60,50)     'Point 1 haut 3/4
+    
+    GraphicsWindow.FillEllipse(col+265,260,60,15)     'Points 2 bas 1/4
+    GraphicsWindow.FillEllipse(col+155,270,60,15)
+    Program.Delay(DureeAffichage)
+    
+    GraphicsWindow.BrushColor = "white"
+    GraphicsWindow.FillRectangle(120+col,90,240,180)  'Effacement
+    GraphicsWindow.FillRectangle(150+col,60,180,240)
+    
+    GraphicsWindow.BrushColor = "black" 
+    GraphicsWindow.PenColor = "black"
+    GraphicsWindow.DrawLine(120+col,180,360+col,180)  'Trait milieu
+    
+    GraphicsWindow.FillEllipse(col+210,90,60,30)      'Point 1 haut 1/2
+    
+    GraphicsWindow.FillEllipse(col+265,200,60,30)     'Points 2 bas 1/2
+    GraphicsWindow.FillEllipse(col+155,240,60,30)
+    Program.Delay(DureeAffichage)
+    
+    GraphicsWindow.BrushColor = "white"
+    GraphicsWindow.FillRectangle(120+col,90,240,180)  'Effacement
+    GraphicsWindow.FillRectangle(150+col,60,180,240)
+    
+    GraphicsWindow.BrushColor = "black"
+    GraphicsWindow.PenColor = "black"
+    GraphicsWindow.DrawLine(120+col,120,360+col,120)  'Trait haut
+    
+    GraphicsWindow.FillEllipse(col+210,75,60,15)      'Point 1 haut 1/4
+    
+    GraphicsWindow.FillEllipse(col+265,150,60,40)     'Points 2 bas 3/4
+    GraphicsWindow.FillEllipse(col+155,215,60,40)
+    Program.Delay(DureeAffichage)
+    
+    GraphicsWindow.BrushColor = "white"
+    GraphicsWindow.FillRectangle(120+col,90,240,180)   'Effacement
+    GraphicsWindow.FillRectangle(150+col,60,180,240)
+    
+    GraphicsWindow.BrushColor = "Black"               'Absence de trait
+    GraphicsWindow.FillEllipse(col+265,85,60,60)      ''Points 4
+    GraphicsWindow.FillEllipse(col+155,215,60,60)
+    GraphicsWindow.FillEllipse(col+265,215,60,60)
+    GraphicsWindow.FillEllipse(col+155,85,60,60)
+    Program.Delay(DureeAffichage)
+    
+    GraphicsWindow.BrushColor = "white"
+    GraphicsWindow.FillRectangle(120+col,90,240,180)   'Effacement
+    GraphicsWindow.FillRectangle(150+col,60,180,240)
+    
+  Endfor
+  
+EndSub
+
+'---------------------------------------------------------------------------- AFFICHAGE ROTATION DES DES  ------------------------------------------------------------------------------------   
+
+Sub rotationdé
+  
+  col = 0
+  
+  GraphicsWindow.PenWidth = 5
+  NbTours = Math.GetRandomNumber(5)
+  
+  While DureeAffichage<30
+    DureeAffichage = Math.GetRandomNumber(30)
+  Endwhile
+  If depart <> 2 Or o = 2 Then
+    For i = 1 To 3
+      
+      tourne()
+      Affichepoints()
+    EndFor
+    
+  EndIf
+  
+  If Math.Remainder(nb1,2) = 1 Then
+    tourne()
+  EndIf
+  Affichepoints()
+  If Math.Remainder(nb2,2) = 1 Then
+    tourne()
+  EndIf
+  Affichepoints()
+  
+  If Math.Remainder(nb3,2) = 1 Then
+    tourne()
+  EndIf
+  Affichepoints()
+    
+EndSub
+
+'---------------------------------------------------------------------------- AFFICHAGE DES POINTS DES DES   ------------------------------------------------------------------------------------   
+
+sub face1                                           'Affichage des points  face 1
+  GraphicsWindow.BrushColor = "Black"
+  GraphicsWindow.FillEllipse(col+210,150,60,60)
+Endsub
+
+sub face2                                           'Affichage des points  face 2
+  GraphicsWindow.BrushColor = "Black"
+  GraphicsWindow.FillEllipse(col+265,85,60,60)
+  GraphicsWindow.FillEllipse(col+155,215,60,60)
+Endsub
+
+sub face3                                           'Affichage des points  face 3
+  GraphicsWindow.BrushColor = "Black"
+  GraphicsWindow.FillEllipse(col+210,150,60,60)
+  GraphicsWindow.FillEllipse(col+265,85,60,60)
+  GraphicsWindow.FillEllipse(col+155,215,60,60)
+Endsub
+
+sub face4                                           'Affichage des points  face 4
+  GraphicsWindow.BrushColor = "Black"
+  GraphicsWindow.FillEllipse(col+265,85,60,60)
+  GraphicsWindow.FillEllipse(col+155,215,60,60)
+  GraphicsWindow.FillEllipse(col+265,215,60,60)
+  GraphicsWindow.FillEllipse(col+155,85,60,60)
+Endsub
+
+sub face5                                           'Affichage des points  face 5
+  GraphicsWindow.BrushColor = "Black"
+  GraphicsWindow.FillEllipse(col+265,85,60,60)
+  GraphicsWindow.FillEllipse(col+155,215,60,60)
+  GraphicsWindow.FillEllipse(col+265,215,60,60)
+  GraphicsWindow.FillEllipse(col+155,85,60,60)
+  GraphicsWindow.FillEllipse(col+210,150,60,60)
+Endsub
+
+sub face6                                           'Affichage des points  face 6
+  GraphicsWindow.BrushColor = "Black"
+  GraphicsWindow.FillEllipse(col+265,75,60,60)
+  GraphicsWindow.FillEllipse(col+155,225,60,60)
+  GraphicsWindow.FillEllipse(col+265,225,60,60)
+  GraphicsWindow.FillEllipse(col+155,150,60,60)
+  GraphicsWindow.FillEllipse(col+265,150,60,60)
+  GraphicsWindow.FillEllipse(col+155,75,60,60)
+Endsub
+
+'---------------------------------------------------------------------------- GESTION DE LA SOURIS - CLIC  DOWN ------------------------------------------------------------------------------------   
+
+Sub OnMouseDown
+  
+  x = GraphicsWindow.MouseX
+  y = GraphicsWindow.MouseY
+  
+  If depart=1 then
+    
+    If x >=725 And x<=1075 Then                      'Détection du clic dans la zone "Contre joueur"
+      If y >=365 And y<= 415 Then
+        GraphicsWindow.BrushColor="Red " 
+        GraphicsWindow.DrawText(745,365,"Jouer vs joueur")
+      EndIf
+    EndIf
+    
+    If x >=365 And x<=715 Then                       'Détection du clic dans la zone "Contre IA"
+      If y >=365 And y<= 415 Then
+        GraphicsWindow.BrushColor="Red " 
+        GraphicsWindow.DrawText(425,365,"Jouer vs IA")
+      EndIf
+    EndIf
+    
+    If x >=5 And x<=355 Then                         'Détection du clic dans la zone "Règles"
+      If y >=365 And y<= 415 Then
+        GraphicsWindow.BrushColor="Red " 
+        GraphicsWindow.DrawText(40,365,"Règles du jeu")
+      EndIf
+    EndIf
+    
+  ElseIf depart=0 then  
+    
+    If x >=650 And x<=1075 Then                      'Détection du clic dans la zone 
+      If y >=365 And y<= 415 Then
+        GraphicsWindow.BrushColor="Red " 
+        GraphicsWindow.DrawText(665,365,"")
+      EndIf
+    EndIf
+    
+    If x >=365 And x<=715 Then                      'Détection du clic dans la zone
+      If y >=365 And y<= 415 Then
+        GraphicsWindow.BrushColor="Red " 
+        GraphicsWindow.DrawText(325,365,"")
+      EndIf
+    EndIf
+    
+    If x >=5 And x<=355 Then                         'Détection du clic dans la zone "Lancer"
+      If y >=365 And y<= 415 Then 
+        GraphicsWindow.BrushColor="Red " 
+        GraphicsWindow.DrawText(32,365,"Lancer les dés")
+      EndIf
+    EndIf
+    
+  Else 
+    If x >=650 And x<=1075 Then                      'Détection du clic dans la zone 
+      If y >=365 And y<= 415 Then
+        GraphicsWindow.BrushColor="Red " 
+        GraphicsWindow.DrawText(665,365,"")
+      EndIf
+    EndIf
+    If x >=650 And x<=1075 Then                      'Détection du clic dans la zone 
+      If y >=365 And y<= 415 Then
+        GraphicsWindow.BrushColor="Red " 
+        GraphicsWindow.DrawText(830,365,"Valider")
+      EndIf
+    EndIf
+    
+    If x >=365 And x<=715 Then                           'Zone Bouton centre
+      If y >=365 And y<= 415 Then
+        GraphicsWindow.BrushColor="red" 
+        GraphicsWindow.DrawText(455,365,"Relancer")
+      EndIf
+    EndIf
+    
+  EndIf    
+  
+EndSub
+
+'---------------------------------------------------------------------------- GESTION DE LA SOURIS - CLIC UP ------------------------------------------------------------------------------------   
+
+Sub OnMouseUp 
+  
+  x = GraphicsWindow.MouseX                            'Récupération des coordonnées d'un clic
+  y = GraphicsWindow.MouseY
+  
+  If depart=1 then
+    
+    If x >=725 And x<=1075 Then
+      If y >=365 And y<= 415 Then                       'Si le clic est en zone "Contre joueur"
+        GraphicsWindow.PenWidth=20
+        GraphicsWindow.BrushColor="white "                 'Effacement du flash rouge du clic
+        GraphicsWindow.DrawText(745,365,"Jouer vs joueur")
+        GraphicsWindow.BrushColor="Yellow"
+        GraphicsWindow.DrawText(150,540,"Nom joueur 1 : ") 'Demande du nom du joueur 1  
+        NomJ1 = "Moi"
+        Acces = "J1"                                     ''Drapeau permettant la saisie clavier du joueur 1
+        GraphicsWindow.BrushColor="yellow"               'Effacement de la zone des boutons de choix 
+        GraphicsWindow.FillRectangle(0,360,1080,60)
+        GraphicsWindow.BrushColor="white"  
+      EndIf
+    EndIf
+    
+    If x >=365 And x<=715 Then   
+      If y >=365 And y<= 415 Then                         'Si le clic est en zone "Contre IA"
+        GraphicsWindow.PenWidth=20
+        GraphicsWindow.BrushColor="white " 
+        GraphicsWindow.DrawText(425,365,"Jouer vs IA")
+        'Code à construire
+        
+      EndIf
+    EndIf
+    
+    If x >=5 And x<=355 Then
+      If y >=365 And y<= 415 Then                        'Si le clic est en zone "Règle"
+        GraphicsWindow.PenWidth=20
+        GraphicsWindow.BrushColor="white " 
+        GraphicsWindow.DrawText(40,365,"Règles du jeu")
+        
+        GraphicsWindow.Title = "Règles du 421"           'Agrandissement de la fenêtre 
+        GraphicsWindow.Width = 1080
+        GraphicsWindow.Height = 750
+        GraphicsWindow.Show()
+        GraphicsWindow.PenWidth=5
+        GraphicsWindow.FontSize=15 
+        GraphicsWindow.BrushColor="red"                 'Affichage de la croix de fermeture 
+        GraphicsWindow.FillRectangle(1015,550,60,60)
+        GraphicsWindow.BrushColor="white"               'Affichage de la règle du jeu 
+        GraphicsWindow.DrawLine(1025,560,1065,600)
+        GraphicsWindow.DrawLine(1065,560,1025,600)
+        GraphicsWindow.DrawText(5,550,"  Une partie de 421 se décompose en deux : la charge, lorsque les pions sont distribués aux joueurs à partir du pot, et la décharge,")
+        GraphicsWindow.DrawText(5,570,"quand les joueurs s'échangent mutuellement leurs pions. Le perdant est celui qui accumule les 21 jetons.")
+        GraphicsWindow.DrawText(5,590,"  Les coups rapportent de 8 à 2 jetons selon l'ordre 421, 111, 611, 666, 511, 555, 411 ,444, 311, 333, 211, 222, 654, 543, 432 et 321. ")
+        GraphicsWindow.DrawText(5,610,"Les autres jets rapportent 1 jeton. Le plus mauvais coup est 221 dit nénette.")
+        GraphicsWindow.DrawText(5,630,"  Pendant la charge, on joue en coups secs. Par la suite, pendant la décharge, le premier joueur peut conserver un ou deux dés et continuer")
+        GraphicsWindow.DrawText(5,650,"à jouer à concurrence de trois fois. Le nombre maximum de lancers sera alors imposé à son adversaire. En cas d'égalité, les deux joueurs se")
+        GraphicsWindow.DrawText(5,670,"départagent en un coup sec. Les pions tranférés sont ceux de l'égalité. On peut rejouer un dé préalablement conservé.")
+        GraphicsWindow.FontSize=40
+      EndIf
+    EndIf
+    If x >=1015 And x<=1075 Then
+      If y >=550 And y<= 610 Then
+        GraphicsWindow.Width = 1080                     'Réduction de la fenêtre
+        GraphicsWindow.Height = 600
+        GraphicsWindow.BrushColor="green"               'Effacement du texte
+        GraphicsWindow.FillRectangle(0,550,1080,60)
+        GraphicsWindow.Title = "421"
+      EndIf
+    EndIf  
+  ElseIf depart=0 then
+    
+    If x >=725 And x<=1075 Then
+      If y >=365 And y<= 415 Then
+        'Zone Bouton droit
+      EndIf
+    EndIf
+    
+    If x >=365 And x<=715 Then
+      If y >=365 And y<= 415 Then
+        'Nothing
+      EndIf
+    EndIf
+    
+    If x >=5 And x<=355 Then
+      If y >=365 And y<= 415 Then
+        o = 2
+        If Jsp <> 1 then
+          If Zone = 2 Then
+            Decharge()
+          EndIf
+          If Zone = 1 Then
+            Charge()
+          EndIf 
+          If Zone = 0 Then
+            Tour()
+          EndIf
+          
+        Else
+          Departage()
+        EndIf        
+        
+      EndIf
+    EndIf
+    
+  Else
+    
+       
+    If x >=365 And x<=715 Then    'Zone Bouton centre
+      If y >=365 And y<= 415 Then
+        effacelebas()
+        If o <> -1 Then
+          If Math.Remainder (nb1,2)=1 Then
+            dé1=Math.GetRandomNumber(6)
+            
+          EndIf
+          
+          If Math.Remainder (nb2,2)=1 Then
+            dé2=Math.GetRandomNumber(6)
+            
+          EndIf
+          
+          If Math.Remainder (nb3,2)=1 Then
+            dé3=Math.GetRandomNumber(6)
+            
+          EndIf
+          rotationdé()
+          tridé()
+          
+          nb1=0
+          nb2=0
+          nb3=0
+          Decharge()
+        Else
+          If g <2 then
+            g = g + 1
+            nb1=0
+            nb2=0
+            nb3=0
+            o = 2
+            
+            ChangeJ()
+            tiredé()
+            depart = 0
+            GraphicsWindow.BrushColor="yellow"     ' Effacement des Boutons '
+            GraphicsWindow.FillRectangle(360,360,720,60)
+            Boutons2()
+          else
+            Decharge()
+          EndIf
+          
+        EndIf
+        
+      EndIf
+    EndIf
+    
+    If x >=725 And x<=1075 Then                                    'Zone Bouton droit
+      If y >=365 And y<= 415 Then
+        effacelebas()
+        If Math.Remainder (nb1,2)=0 Then
+          If Math.Remainder (nb2,2)=0 Then
+            If Math.Remainder (nb3,2)=0 Then
+              If g <2 then
+                g=g+1
+                nb1=0
+                nb2=0
+                nb3=0
+                o = 2
+                ChangeJ()
+                tiredé()
+                depart = 0
+                GraphicsWindow.BrushColor="yellow"     ' Effacement des Boutons '
+                GraphicsWindow.FillRectangle(360,360,720,60)
+                Boutons2()
+              else
+                Decharge()
+              EndIf
+              
+            EndIf              
+          EndIf
+        EndIf
+        
+      EndIf
+      
+    EndIf
+
+'------------------------------------------------------------MISE EN SURBRILLANCE DES DES -----------------------------------------------------------------'
+    
+    If x >=120 And x<=360 Then                                            'dé gauche'
+      If y >=60 And y<= 300 Then
+        nb1 = nb1+1
+        BtnRelancer()
+        col =0
+        If Math.Remainder(nb1,2) = 1 Then
+          
+          GraphicsWindow.BrushColor = "cyan"
+          
+        Else
+          
+          GraphicsWindow.BrushColor = "white"
+          
+        EndIf
+        BtnValider()
+        
+        GraphicsWindow.FillEllipse(120+col,60,60,60)
+        GraphicsWindow.FillEllipse(120+col,240,60,60)
+        GraphicsWindow.FillEllipse(300+col,60,60,60)
+        GraphicsWindow.FillEllipse(300+col,240,60,60)
+        GraphicsWindow.FillRectangle(150+col,60,180,240)
+        GraphicsWindow.FillRectangle(120+col,90,240,180)
+        
+        Affichepoints()
+      EndIf
+    EndIf
+    
+    If x >=420 And x<=660 Then                                               'dé milieu'
+      If y >=60 And y<= 300 Then
+        nb2 = nb2+1
+        BtnRelancer()
+        col =300
+        If Math.Remainder(nb2,2) = 1 Then
+          
+          GraphicsWindow.BrushColor = "cyan"
+          
+        Else
+          
+          GraphicsWindow.BrushColor = "white"
+          
+        EndIf
+        BtnValider()
+        GraphicsWindow.FillEllipse(120+col,60,60,60)
+        GraphicsWindow.FillEllipse(120+col,240,60,60)
+        GraphicsWindow.FillEllipse(300+col,60,60,60)
+        GraphicsWindow.FillEllipse(300+col,240,60,60)
+        GraphicsWindow.FillRectangle(150+col,60,180,240)
+        GraphicsWindow.FillRectangle(120+col,90,240,180)
+        
+        Affichepoints()
+      EndIf
+    EndIf
+    If x >=720 And x<=960 Then                                                'dé droit'
+      If y >=60 And y<= 300 Then
+        nb3 = nb3+1
+        BtnRelancer()
+        col =600
+        If Math.Remainder(nb3,2) = 1 Then
+          
+          GraphicsWindow.BrushColor = "cyan"
+          
+        Else
+          
+          GraphicsWindow.BrushColor = "white"
+                    
+        EndIf
+        BtnValider()
+        GraphicsWindow.FillEllipse(120+col,60,60,60)
+        GraphicsWindow.FillEllipse(120+col,240,60,60)
+        GraphicsWindow.FillEllipse(300+col,60,60,60)
+        GraphicsWindow.FillEllipse(300+col,240,60,60)
+        GraphicsWindow.FillRectangle(150+col,60,180,240)
+        GraphicsWindow.FillRectangle(120+col,90,240,180)
+        
+        Affichepoints()
+      EndIf
+    EndIf 
+  EndIf
+    
+EndSub 
+
+'---------------------------------------------------------------------------- GESTION DU CLAVIER ------------------------------------------------------------------------------------   
+
+Sub GestionClavier 
+  
+  If Acces = "J2" Then                                     'Saisie du nom du joueur 2
+    char = GraphicsWindow.LastText                         'Capture d'un caractère clavier
+    If (Text.GetCharacterCode(char) <> 13) Then            'Si le caractère est autre que Entree     
+      charJ = charJ+GraphicsWindow.LastText                'Concaténation du mot
+      GraphicsWindow.Brushcolor="white"      
+      GraphicsWindow.DrawText(500,540, charJ)              ''Ecriture du mot pendant la saisie
+    Else
+      NomJ2 = charJ                                        'Affectation du nom au joueur
+      charJ=""
+      GraphicsWindow.Brushcolor="white"                    'Ecriture du nom dans la fenetre des jetons
+      GraphicsWindow.DrawText(725,415,NomJ2)               
+      GraphicsWindow.BrushColor="Green"                    'Effacement des boutons
+      GraphicsWindow.FillRectangle(0,540,1080,60)
+      Boutons2()
+      Acces = "Sortie"                                     'Sortie de la saisie clavier des noms des joueurs
+    EndIf
+  EndIf
+  
+  If Acces = "J1" Then                                     'Saisie du nom du joueur 1
+    char = GraphicsWindow.LastText 
+    If (Text.GetCharacterCode(char) <> 13) Then
+      charJ = charJ+GraphicsWindow.LastText
+      GraphicsWindow.Brushcolor="white"      
+      GraphicsWindow.DrawText(500,540, charJ)    
+    Else
+      NomJ1 = charJ
+      charJ=""
+      GraphicsWindow.Brushcolor="white"                     'Ecriture du nom dans la fenetre des jetons   
+      GraphicsWindow.DrawText(365,415,NomJ1)
+      GraphicsWindow.BrushColor="Green"                     'Effacement des boutons
+      GraphicsWindow.FillRectangle(0,540,1080,60)
+      
+      GraphicsWindow.BrushColor="Yellow"                    'Demande du nom du joueur 2  
+      GraphicsWindow.DrawText(150,540,"Nom joueur 2 : ")    
+      Acces = "J2"                                          'Drapeau permettant la saisie clavier du joueur 2
+      NomJ2 = "Lui"
+      depart=0                                              'Drapeau caractérisant la fin de la séquence de départ
+      g=2
+      Zone = 0
+    EndIf
+  EndIf
+  
+EndSub 
+
+'------------------------------------------------------------- SECTION PERMETTANT LE JEU DES 2 JOUEURS ET L'AFFICHAGE DES TOURS DE JEU  ----------------------------------------------------------------
+
+Sub jeujoueur1
+  
+  GraphicsWindow.BrushColor="sienna"                         'Effacement du jet
+  GraphicsWindow.FillRectangle(615,422,98,35)
+  tiredé()
+  affichdé()
+  rotationdé()
+  jetj1=jet
+  GraphicsWindow.BrushColor="white"                          'Affichage  du  jet
+  GraphicsWindow.DrawText(635,415,jetj1)
+  GraphicsWindow.BrushColor="yellow"
+  GraphicsWindow.DrawText(150,540,"A vous "+NomJ2)           'Passage au deuxième joueur
+  
+EndSub
+
+Sub jeujoueur2
+  GraphicsWindow.BrushColor="sienna"
+  GraphicsWindow.FillRectangle(980,422,98,35)                  'Effacement du jet
+  tiredé()
+  affichdé()
+  rotationdé()
+  jetj2=jet
+  GraphicsWindow.BrushColor="white"                           'Affichage  du  jet
+  GraphicsWindow.DrawText(1000,415,jetj2)
+  GraphicsWindow.BrushColor="yellow"
+  GraphicsWindow.DrawText(150,540,"A vous "+NomJ1)            'Retour au premier joueur
+EndSub  
+
+'-----------------------------------------------------------------------------------EFFACEMENT ZONE DU BAS -----------------------------------------------------------------------------------------------------
+
+Sub effacelebas
+  GraphicsWindow.BrushColor="green"                            'Effacement du texte
+  GraphicsWindow.FillRectangle(0,547,1080,65)
+EndSub
+
+'-------------------------------------------------------------------------------------------------TOUR---------------------------------------------------------------------------------------
+
+Sub Tour
+  If g = 2 Then
+    Reset()
+  EndIf
+  
+  GraphicsWindow.BrushColor="white " 
+  GraphicsWindow.DrawText(32,365,"Lancer les dés")              'Nothing
+  Ordre()
+  g = g - 1
+  If g = 0 Then
+    For m=1 To 56
+      If Valeur[m][2]=jetj1 then
+        rangj1=Valeur[m][1]
+        
+      EndIf
+    EndFor
+    For m=1 To 56
+      If Valeur[m][2]=jetj2 then
+        rangj2=Valeur[m][1]
+        
+      EndIf
+    EndFor
+    If rangj1<rangj2 Then 
+      effacelebas()
+      GraphicsWindow.BrushColor="yellow"
+      GraphicsWindow.DrawText(150,540,NomJ1+" commence la partie")
+      jeudujoueur=1
+      
+      g=g+2
+      Zone =1
+    ElseIf rangj1>rangj2 then
+      effacelebas()
+      GraphicsWindow.BrushColor="yellow"
+      GraphicsWindow.DrawText(150,540,NomJ2+" commence la partie")
+      jeudujoueur=2
+      
+      g=g+2
+      Zone =1
+    Else
+      GraphicsWindow.BrushColor="yellow"
+      GraphicsWindow.DrawText(150,540,"Les coups sont égaux veuillez relancer "+NomJ1)
+      
+      g=g+2
+    EndIf
+  EndIf
+  
+EndSub
+
+'------------------------------------------------------------------------------------------------------------CHARGE---------------------------------------------------------------------------------
+
+Sub Charge
+  If g = 2 Then
+    Reset()
+  EndIf
+  GraphicsWindow.BrushColor="white " 
+  
+  GraphicsWindow.DrawText(32,365,"Lancer les dés")
+  
+  
+  If nbjetonspot>0 Then
+    g=g-1
+    Ordre()
+    If g = 0 Then
+      For m=1 To 56
+        If Valeur[m][2]=jetj1 then
+          rangj1=Valeur[m][1]
+          emplactock1=m
+        EndIf
+      EndFor
+      For m=1 To 56
+        If Valeur[m][2]=jetj2 then
+          rangj2=Valeur[m][1]
+          emplactock2=m
+        EndIf
+      EndFor
+      If rangj1<rangj2 Then
+        If Valeur[emplactock1][3]<nbjetonspot then
+          nbjetonsJ2= nbjetonsJ2+Valeur[emplactock1][3]
+        Else 
+          nbjetonsJ2= nbjetonsJ2+nbjetonspot
+        EndIf
+        GraphicsWindow.BrushColor="Green"                           'Effacement du texte
+        GraphicsWindow.FillRectangle(0,540,1080,60)
+        
+        GraphicsWindow.FontSize=30
+        GraphicsWindow.BrushColor="yellow"
+        GraphicsWindow.DrawText(50,550,NomJ2 +" reçoit " + Valeur[emplactock1][3] + " jeton(s). A vous "+ NomJ2 +" de jouer") 
+        jeudujoueur = 2
+        GraphicsWindow.FontSize=40
+        
+        GraphicsWindow.BrushColor ="Sienna"
+        GraphicsWindow.FillRectangle(8,460,340,73)
+        g=g+2
+        jetons()
+      EndIf
+      If rangj2<rangj1 Then
+        If Valeur[emplactock2][3]<nbjetonspot then
+          nbjetonsJ1= nbjetonsJ1+Valeur[emplactock2][3]
+        Else 
+          nbjetonsJ1= nbjetonsJ1+nbjetonspot
+        EndIf
+        GraphicsWindow.BrushColor="Green"                         'Effacement du texte
+        GraphicsWindow.FillRectangle(0,550,1080,60)
+        GraphicsWindow.FontSize=30
+        GraphicsWindow.BrushColor="yellow"
+        
+        GraphicsWindow.DrawText(50,550,NomJ1 +" reçoit " + Valeur[emplactock2][3] + " jeton(s). A vous "+ NomJ1 +" de jouer") 
+        jeudujoueur = 1
+        GraphicsWindow.FontSize=40
+        GraphicsWindow.BrushColor ="Sienna"
+        GraphicsWindow.FillRectangle(8,460,340,73)
+        g=g+2
+        jetons()
+      EndIf
+      If rangj2 = rangj1 Then
+        g = 2
+        GraphicsWindow.BrushColor="yellow"
+        
+        GraphicsWindow.DrawText(50,550,"Les coups sont identiques. Coup sec en départage.") 
+      EndIf
+    EndIf
+    
+  EndIf
+  If nbjetonspot = 0 Then
+    effacelebas()
+    GraphicsWindow.BrushColor ="Sienna"
+    GraphicsWindow.FillRectangle(8,460,340,73)
+    GraphicsWindow.BrushColor="yellow"
+    GraphicsWindow.DrawText(50,550,"Tous les jetons ont été distribués") 
+    Zone = 2
+    g = 0
+    
+    nb1=0
+    nb2=0
+    nb3=0
+  EndIf
+EndSub
+
+'------------------------------------------------------------------------------------------------------------------------------------------DECHARGE--------------------------------------------------------------------------------
+
+Sub Decharge
+  If g = 0 Then
+    Reset()
+  EndIf
+  effacelebas()
+  
+  ' GraphicsWindow.BrushColor="cyan"  
+  ' GraphicsWindow.FillRectangle(0,0,70,70)
+  ' GraphicsWindow.BrushColor="red"  
+  ' GraphicsWindow.DrawText(5,5,g)
+  
+  GraphicsWindow.BrushColor="yellow " 
+  GraphicsWindow.FillRectangle(3,360,355,60)
+  If jeudujoueur=1 Then
+    GraphicsWindow.DrawText(50,550,NomJ1 + " il vous reste "+ o + " lancer(s)")
+  Else
+    GraphicsWindow.DrawText(50,550,NomJ2 + " il vous reste "+ o + " lancer(s)")
+  EndIf
+  
+  
+  depart=2
+  
+  If (nbjetonsJ1>0) And(nbjetonsJ2>0) then
+    If g = 2 Then
+      effacelebas()
+      GraphicsWindow.BrushColor="yellow"     ' Effacement des Boutons '
+      GraphicsWindow.FillRectangle(360,360,720,60)
+      
+      
+      For m=1 To 56
+        If Valeur[m][2]=jetj1 then
+          rangj1=Valeur[m][1]
+          emplactock1=m
+        EndIf
+      EndFor
+      For m=1 To 56
+        If Valeur[m][2]=jetj2 then
+          rangj2=Valeur[m][1]
+          emplactock2=m
+        EndIf
+      EndFor
+      If rangj1<rangj2 Then
+        effacejetons()
+        If Valeur[emplactock1][3]<nbjetonsJ1 then
+          nbjetonsJ2= nbjetonsJ2+Valeur[emplactock1][3]
+          nbjetonsJ1= nbjetonsJ1 - Valeur[emplactock1][3]
+        Else 
+          nbjetonsJ2= nbjetonsJ2+nbjetonsJ1
+          nbjetonsJ1=0
+        EndIf
+        effacelebas()
+        GraphicsWindow.BrushColor="Green"                                   'Effacement du texte
+        GraphicsWindow.FillRectangle(0,540,1080,60)
+        GraphicsWindow.BrushColor="yellow"
+        jeudujoueur=2
+        GraphicsWindow.DrawText(50,540,NomJ2 +" reçoit " + Valeur[emplactock1][3] + " jeton(s). A vous "+ NomJ2 +" de jouer") 
+        
+        GraphicsWindow.BrushColor="DarkSlateGray"
+        GraphicsWindow.FillRectangle(5,365,350,50)
+        GraphicsWindow.PenWidth=2
+        GraphicsWindow.PenColor="Black"
+        GraphicsWindow.DrawRectangle(5,365,350,50)
+        GraphicsWindow.BrushColor="White"
+        GraphicsWindow.DrawText(32,365,"Lancer les dés")
+        Jsp = 0
+      EndIf 
+      If rangj2<rangj1 Then
+        effacejetons()
+        If Valeur[emplactock2][3]<nbjetonsJ2 then
+          nbjetonsJ1= nbjetonsJ1+Valeur[emplactock2][3]
+          nbjetonsJ2= nbjetonsJ2 - Valeur[emplactock2][3]
+        Else 
+          nbjetonsJ1= nbjetonsJ1+nbjetonsJ2
+          nbjetonsJ2=0
+        EndIf
+        
+        GraphicsWindow.BrushColor="Green"                                   'Effacement du texte
+        GraphicsWindow.FillRectangle(0,540,1080,60)
+        GraphicsWindow.BrushColor="yellow"
+        jeudujoueur=1
+        GraphicsWindow.DrawText(50,540,NomJ1 +" reçoit " + Valeur[emplactock2][3] + " jeton(s). A vous "+ NomJ1 +" de jouer") 
+        
+        GraphicsWindow.BrushColor="DarkSlateGray"
+        GraphicsWindow.FillRectangle(5,365,350,50)
+        GraphicsWindow.PenWidth=2
+        GraphicsWindow.PenColor="Black"
+        GraphicsWindow.DrawRectangle(5,365,350,50)
+        GraphicsWindow.BrushColor="White"
+        GraphicsWindow.DrawText(32,365,"Lancer les dés")
+        g = 0
+        Jsp = 0
+      EndIf
+      If rangj2 = rangj1 Then
+        stocktransfert = Valeur[emplactock2][3]
+        GraphicsWindow.BrushColor="Yellow"
+        
+        GraphicsWindow.DrawText(50,550,"Les coups sont identiques. Coup sec en départage.") 
+        depart = 0
+        GraphicsWindow.BrushColor="DarkSlateGray"
+        GraphicsWindow.FillRectangle(5,365,350,50)
+        GraphicsWindow.PenWidth=2
+        GraphicsWindow.PenColor="Black"
+        GraphicsWindow.DrawRectangle(5,365,350,50)
+        GraphicsWindow.BrushColor="White"
+        GraphicsWindow.DrawText(32,365,"Lancer les dés")
+        jsp = 1
+      EndIf
+      GraphicsWindow.BrushColor="DarkSlateGray"
+      GraphicsWindow.FillRectangle(5,365,350,50)
+      GraphicsWindow.PenWidth=2
+      GraphicsWindow.PenColor="Black"
+      GraphicsWindow.DrawRectangle(5,365,350,50)
+      GraphicsWindow.BrushColor="White"
+      GraphicsWindow.DrawText(32,365,"Lancer les dés")
+      depart = 0
+      g=0
+      
+      jetons()
+    Else
+      
+      jj()
+      o = o - 1
+      
+      GraphicsWindow.BrushColor="DarkSlateGray"     ' Bouton droite '
+      GraphicsWindow.FillRectangle(725,365,350,50)
+      GraphicsWindow.PenWidth=2
+      GraphicsWindow.PenColor="Black"
+      GraphicsWindow.DrawRectangle(725,365,350,50)
+      GraphicsWindow.BrushColor="White " 
+      GraphicsWindow.DrawText(830,365,"Valider")
+      
+
+    EndIf
+    
+  EndIf
+  
+EndSub
+
+'----------------------------------------------------------------------------------------------------------- EFFACEMENT DES SCORES ---------------------------------------------------------------------------------------------------------
+
+Sub Reset    
+  
+  GraphicsWindow.BrushColor="sienna"
+  GraphicsWindow.FillRectangle(980,422,98,35)
+  GraphicsWindow.FillRectangle(615,422,98,35)
+  
+EndSub
+
+' ---------------------------------------------------------------------------------------------------------- ORDRE ----------------------------------------------------------------------------------------------------------------
+
+Sub Ordre
+  
+  If jeudujoueur=1 Then
+    effacelebas()
+    jeujoueur1()
+    
+    jeudujoueur=2
+  Else
+    effacelebas()
+    jeujoueur2()
+        
+    jeudujoueur=1
+  EndIf
+  
+EndSub
+
+' ---------------------------------------------------------------------------------------------------------- CHANGEJ--------------------------------------------------------------------------------------------------------------
+
+Sub ChangeJ
+  
+  If jeudujoueur=1 Then
+    jeudujoueur=2
+  Else
+    jeudujoueur=1
+  EndIf
+  
+EndSub
+
+' -------------------------------------------------------------------------------------------------------------- JJ -----------------------------------------------------------------------------------------------------------------------
+
+Sub jj 
+  
+  If jeudujoueur=1 Then
+    GraphicsWindow.BrushColor="sienna"                         'Effacement du jet
+    GraphicsWindow.FillRectangle(615,422,98,35)
+    affichdé()
+    rotationdé()
+    
+    jetj1=jet
+        
+    GraphicsWindow.BrushColor="white"                          'Affichage  du  jet
+    GraphicsWindow.DrawText(635,415,jetj1)
+    GraphicsWindow.BrushColor="yellow"
+  
+ Else
+    GraphicsWindow.BrushColor="sienna"                         'Effacement du jet
+    GraphicsWindow.FillRectangle(980,422,98,35)
+    
+    affichdé()
+    rotationdé()
+    
+    jetj2=jet
+    
+    GraphicsWindow.BrushColor="white"                          'Affichage  du  jet
+    GraphicsWindow.DrawText(1000,415,jetj2)
+    GraphicsWindow.BrushColor="yellow"
+    
+  EndIf
+  
+EndSub
+
+' -------------------------------------------------------------------------------------------------------------- DEPARTAGE -----------------------------------------------------------------------------------------------------------------------
+
+Sub Departage
+  
+  GraphicsWindow.BrushColor="white " 
+  GraphicsWindow.DrawText(32,365,"Lancer les dés")
+     
+  g=g+1
+  Ordre()
+  If g = 2 Then
+    For m=1 To 56
+      If Valeur[m][2]=jetj1 then
+        rangj1=Valeur[m][1]
+        
+      EndIf
+    EndFor
+    For m=1 To 56
+      If Valeur[m][2]=jetj2 then
+        rangj2=Valeur[m][1]
+      EndIf
+    EndFor
+    
+    If rangj1<rangj2 Then
+      effacejetons()
+      If stocktransfert<nbjetonsJ1 then
+        nbjetonsJ2= nbjetonsJ2+stocktransfert
+        nbjetonsJ1= nbjetonsJ1 - stocktransfert
+      Else 
+        nbjetonsJ2= nbjetonsJ2+nbjetonsJ1
+        nbjetonsJ1=0
+      EndIf
+      effacelebas()
+      GraphicsWindow.BrushColor="Green"                                   'Effacement du texte
+      GraphicsWindow.FillRectangle(0,540,1080,60)
+      GraphicsWindow.BrushColor="yellow"
+      jeudujoueur=2
+      GraphicsWindow.DrawText(50,540,NomJ2 +" reçoit " + stocktransfert + " jeton(s). A vous "+ NomJ2 +" de jouer") 
+      Jsp = 0
+    EndIf 
+    If rangj2<rangj1 Then
+      effacejetons()
+      If stocktransfert<nbjetonsJ2 then
+        nbjetonsJ1= nbjetonsJ1+stocktransfert
+        nbjetonsJ2= nbjetonsJ2 - stocktransfert
+      Else 
+        nbjetonsJ1= nbjetonsJ1+nbjetonsJ2
+        nbjetonsJ2=0
+      EndIf
+      effacelebas()
+      GraphicsWindow.BrushColor="Green"                                   'Effacement du texte
+      GraphicsWindow.FillRectangle(0,540,1080,60)
+      GraphicsWindow.BrushColor="yellow"
+      jeudujoueur=1
+      GraphicsWindow.DrawText(50,540,NomJ1 +" reçoit " + stocktransfert + " jeton(s). A vous "+ NomJ1 +" de jouer") 
+      Jsp = 0
+    EndIf
+    If rangj2 = rangj1 Then
+      g = 2
+      GraphicsWindow.BrushColor="yellow"
+      GraphicsWindow.DrawText(50,550,"Les coups sont identiques. Coup sec en départage.") 
+      Departage()
+    EndIf
+    g = 0
+   jetons()
+  EndIf
+    
+EndSub
+
+'------------------------------------------------------------------------------------------------------------REAFFICHAGE BOUTON VALIDER--------------------------------------------
+
+Sub BtnValider
+  
+  If Math.Remainder (nb1,2)=0 Then
+    If Math.Remainder (nb2,2)=0 Then
+      If Math.Remainder (nb3,2)=0 Then
+        GraphicsWindow.BrushColor="DarkSlateGray"                          ' Réapparition du Bouton Valider '
+        GraphicsWindow.FillRectangle(725,365,350,50)
+        GraphicsWindow.PenWidth=2
+        GraphicsWindow.PenColor="Black"
+        GraphicsWindow.DrawRectangle(725,365,350,50)
+        GraphicsWindow.BrushColor="White " 
+        GraphicsWindow.DrawText(830,365,"Valider")
+      EndIf
+    EndIf
+  EndIf
+  
+EndSub
+
+ '--------------------------------------------------------------------------------------------------------------------BOUTON  RELANCER-------------------------------
+
+Sub BtnRelancer
+  
+  if Math.Remainder (nb1,2)=1 or Math.Remainder (nb2,2)=1 or Math.Remainder (nb3,2)=1 Then
+    GraphicsWindow.BrushColor="yellow"                                     ' Effacement du Bouton Valider
+    GraphicsWindow.FillRectangle(720,360,360,60)
+    
+    GraphicsWindow.BrushColor="DarkSlateGray"                              'Affichage du Bouton Relancer '
+    GraphicsWindow.FillRectangle(365,365,350,50)
+    GraphicsWindow.PenWidth=2
+    GraphicsWindow.PenColor="Black"
+    GraphicsWindow.DrawRectangle(365,365,350,50)
+    GraphicsWindow.BrushColor="White " 
+    GraphicsWindow.DrawText(455,365,"Relancer")
+  Else
+    GraphicsWindow.BrushColor="yellow"                                    ' Effacement du Bouton Relancer '
+    GraphicsWindow.FillRectangle(360,360,360,60)
+  EndIf
+  
+EndSub
+
+' --------------------------------------------------------------------------------------------- AFFICHE LES POINTS DES DES---------------------------------------------------------------------------------------------------------------------------
+
+Sub Affichepoints
+  If col = 900 Then
+    col = 0
+  EndIf
+  If col = 0 Then                                      'Demande d'affichage des points du dé 1
+    If dé1=1 Then   
+      face1()
+    elseif dé1=2 then
+      face2()
+    elseif dé1=3 then
+      face3()
+    elseif dé1=4 then
+      face4()
+    elseif dé1=5 then
+      face5()
+    elseif dé1=6 then
+      face6()
+    endif
+  EndIf
+  
+  If col = 300 Then                                    'Demande d'affichage des points du dé 2
+    if dé2=1 then
+      face1()
+    elseif dé2=2 then
+      face2()
+    elseif dé2=3 then
+      face3()
+    elseif dé2=4 then
+      face4()
+    elseif dé2=5 then
+      face5()
+    elseif dé2=6 then
+      face6()
+    endif
+  EndIf
+  
+  If col=600 Then                                    'Demande d'affichage des points du dé 3
+    if dé3=1 then
+      face1()
+    elseif dé3=2 then
+      face2()
+    elseif dé3=3 then
+      face3()
+    elseif dé3=4 then
+      face4()
+    elseif dé3=5 then
+      face5()
+    elseif dé3=6 then
+      face6()                
+    endIf
+  EndIf
+  
+  col = col + 300
+  
+EndSub 
+
+'------------------------------------------------------------------------------- VALEURS DES TIRAGES  --------------------------------------------------------------------------------
+
+Sub Valeurs
+  
+  Valeur[1][1]=1
+  Valeur[1][2]=421
+  Valeur[1][3]=8
+  
+  Valeur[2][1]=2
+  Valeur[2][2]=111
+  Valeur[2][3]=7
+  
+  Valeur[3][1]=3
+  Valeur[3][2]=611
+  Valeur[3][3]=6
+  
+  Valeur[4][1]=4
+  Valeur[4][2]=666
+  Valeur[4][3]=6
+  
+  Valeur[5][1]=5
+  Valeur[5][2]=511
+  Valeur[5][3]=5
+  
+  Valeur[6][1]=6
+  Valeur[6][2]=555
+  Valeur[6][3]=5
+  
+  Valeur[7][1]=7
+  Valeur[7][2]=411
+  Valeur[7][3]=4
+  
+  Valeur[8][1]=8
+  Valeur[8][2]=444
+  Valeur[8][3]=4
+  
+  Valeur[9][1]=9
+  Valeur[9][2]=311
+  Valeur[9][3]=3
+  
+  Valeur[10][1]=10
+  Valeur[10][2]=333
+  Valeur[10][3]=3
+  
+  Valeur[11][1]=11
+  Valeur[11][2]=211
+  Valeur[11][3]=2
+  
+  Valeur[12][1]=12
+  Valeur[12][2]=222
+  Valeur[12][3]=2
+  
+  Valeur[13][1]=13
+  Valeur[13][2]=654
+  Valeur[13][3]=2
+  
+  Valeur[14][1]=14
+  Valeur[14][2]=543
+  Valeur[14][3]=2
+  
+  Valeur[15][1]=15
+  Valeur[15][2]=432
+  Valeur[15][3]=2
+  
+  Valeur[16][1]=16
+  Valeur[16][2]=321
+  Valeur[16][3]=2
+  
+  Valeur[17][1]=17
+  Valeur[17][2]=665
+  Valeur[17][3]=1
+  
+  Valeur[18][1]=18
+  Valeur[18][2]=664
+  Valeur[18][3]=1
+  
+  Valeur[19][1]=19
+  Valeur[19][2]=663
+  Valeur[19][3]=1
+  
+  Valeur[20][1]=20
+  Valeur[20][2]=662
+  Valeur[20][3]=1
+  
+  Valeur[21][1]=21
+  Valeur[21][2]=661
+  Valeur[21][3]=1
+  
+  Valeur[22][1]=22
+  Valeur[22][2]=655
+  Valeur[22][3]=1
+  
+  Valeur[23][1]=23
+  Valeur[23][2]=653
+  Valeur[23][3]=1
+  
+  Valeur[24][1]=24
+  Valeur[24][2]=652
+  Valeur[24][3]=1
+  
+  Valeur[25][1]=25  
+  Valeur[25][2]=651
+  Valeur[25][3]=1
+  
+  Valeur[26][1]=26
+  Valeur[26][2]=644
+  Valeur[26][3]=1
+  
+  Valeur[27][1]=27
+  Valeur[27][2]=643
+  Valeur[27][3]=1
+  
+  Valeur[28][1]=28  
+  Valeur[28][2]=642
+  Valeur[28][3]=1
+  
+  Valeur[29][1]=29
+  Valeur[29][2]=641
+  Valeur[29][3]=1
+  
+  Valeur[30][1]=30
+  Valeur[30][2]=633
+  Valeur[30][3]=1
+  
+  Valeur[31][1]=31  
+  Valeur[31][2]=632
+  Valeur[31][3]=1
+  
+  Valeur[32][1]=32
+  Valeur[32][2]=631
+  Valeur[32][3]=1
+  
+  Valeur[33][1]=33
+  Valeur[33][2]=622
+  Valeur[33][3]=1
+  
+  Valeur[34][1]=34  
+  Valeur[34][2]=621
+  Valeur[34][3]=1
+  
+  Valeur[35][1]=35
+  Valeur[35][2]=554
+  Valeur[35][3]=1
+  
+  Valeur[36][1]=36
+  Valeur[36][2]=553
+  Valeur[36][3]=1
+  
+  Valeur[37][1]=37
+  Valeur[37][2]=552
+  Valeur[37][3]=1
+  
+  Valeur[38][1]=38
+  Valeur[38][2]=551
+  Valeur[38][3]=1
+  
+  Valeur[39][1]=39
+  Valeur[39][2]=544
+  Valeur[39][3]=1
+  
+  Valeur[40][1]=40
+  Valeur[40][2]=542
+  Valeur[40][3]=1
+  
+  Valeur[41][1]=41
+  Valeur[41][2]=541
+  Valeur[41][3]=1
+  
+  Valeur[42][1]=42
+  Valeur[42][2]=533
+  Valeur[42][3]=1
+  
+  Valeur[43][1]=43
+  Valeur[43][2]=532
+  Valeur[43][3]=1
+  
+  Valeur[44][1]=44
+  Valeur[44][2]=531
+  Valeur[44][3]=1
+  
+  Valeur[45][1]=45
+  Valeur[45][2]=522
+  Valeur[45][3]=1
+  
+  Valeur[46][1]=46
+  Valeur[46][2]=521
+  Valeur[46][3]=1
+  
+  Valeur[47][1]=47
+  Valeur[47][2]=443
+  Valeur[47][3]=1
+  
+  Valeur[48][1]=48
+  Valeur[48][2]=442
+  Valeur[48][3]=1
+  
+  Valeur[49][1]=49
+  Valeur[49][2]=441
+  Valeur[49][3]=1
+  
+  Valeur[50][1]=50
+  Valeur[50][2]=433
+  Valeur[50][3]=1
+  
+  Valeur[51][1]=51
+  Valeur[51][2]=431
+  Valeur[51][3]=1
+  
+  Valeur[52][1]=52
+  Valeur[52][2]=422
+  Valeur[52][3]=1
+  
+  Valeur[53][1]=53
+  Valeur[53][2]=332
+  Valeur[53][3]=1
+  
+  Valeur[54][1]=54
+  Valeur[54][2]=331
+  Valeur[54][3]=1
+  
+  Valeur[55][1]=55
+  Valeur[55][2]=322
+  Valeur[55][3]=1
+  
+  Valeur[56][1]=56
+  Valeur[56][2]=221
+  Valeur[56][3]=1
+  
+EndSub
+
+'------------------------------------------------------------------------------- COMPARAISON DES TIRAGES  --------------------------------------------------------------------------------
+
+Sub Compar
+  
+  For i = 1 To 56                              ' Récupération du rang du jet et de son rapport en jetons
+    If Valeur[i][2]=jet then
+      Rang = valeur[i][1]
+      Jetons = valeur[i][3]
+    endif
+  EndFor 
+  
+EndSub
+
+'------------------------------------------------------------------------------- FIN DU PROGRAMME  --------------------------------------------------------------------------------
+
+Fin:
+
+
+
